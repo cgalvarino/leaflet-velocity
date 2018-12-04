@@ -26,6 +26,7 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		this._canvas = null;
 		this._frame = null;
 		this._delegate = null;
+		this._pane = options.pane || 'overlayPane';
 		L.setOptions(this, options);
 	},
 
@@ -77,7 +78,7 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		var animated = this._map.options.zoomAnimation && L.Browser.any3d;
 		L.DomUtil.addClass(this._canvas, 'leaflet-zoom-' + (animated ? 'animated' : 'hide'));
 
-		map._panes.overlayPane.appendChild(this._canvas);
+		map.getPane(this._pane).appendChild(this._canvas);
 		map.on(this.getEvents(), this);
 
 		var del = this._delegate || this;
@@ -96,7 +97,7 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		del.onLayerWillUnmount && del.onLayerWillUnmount(); // -- callback
 
 
-		map.getPanes().overlayPane.removeChild(this._canvas);
+		map.getPane(this._pane).removeChild(this._canvas);
 
 		map.off(this.getEvents(), this);
 
@@ -156,9 +157,10 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 	}
 });
 
-L.canvasLayer = function () {
-	return new L.CanvasLayer();
+L.canvasLayer = function (options) {
+	return new L.CanvasLayer(options);
 };
+
 L.Control.Velocity = L.Control.extend({
 
 	options: {
@@ -272,7 +274,8 @@ L.VelocityLayer = (L.Layer ? L.Layer : L.Class).extend({
 		},
 		maxVelocity: 10, // used to align color scale
 		colorScale: null,
-		data: null
+		data: null,
+		pane: 'overlayPane'
 	},
 
 	_map: null,
@@ -288,7 +291,7 @@ L.VelocityLayer = (L.Layer ? L.Layer : L.Class).extend({
 
 	onAdd: function onAdd(map) {
 		// create canvas, add overlay control
-		this._canvasLayer = L.canvasLayer().delegate(this);
+		this._canvasLayer = L.canvasLayer({ pane: this.options.pane }).delegate(this);
 		this._canvasLayer.addTo(map);
 		this._map = map;
 	},
@@ -389,6 +392,7 @@ L.VelocityLayer = (L.Layer ? L.Layer : L.Class).extend({
 L.velocityLayer = function (options) {
 	return new L.VelocityLayer(options);
 };
+
 /*  Global class for simulating the movement of particle through a 1km wind grid
 
  credit: All the credit for this work goes to: https://github.com/cambecc for creating the repo:

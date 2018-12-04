@@ -9,7 +9,8 @@ L.VelocityLayer = (L.Layer ? L.Layer : L.Class).extend({
 		},
 		maxVelocity: 10, // used to align color scale
 		colorScale: null,
-		data: null
+		data: null,
+		pane: 'overlayPane'
 	},
 
 	_map: null,
@@ -25,7 +26,7 @@ L.VelocityLayer = (L.Layer ? L.Layer : L.Class).extend({
 
 	onAdd: function(map) {
 		// create canvas, add overlay control
-		this._canvasLayer = L.canvasLayer().delegate(this);
+		this._canvasLayer = L.canvasLayer({pane: this.options.pane}).delegate(this);
 		this._canvasLayer.addTo(map);
 		this._map = map;
 	},

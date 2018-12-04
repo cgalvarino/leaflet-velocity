@@ -29,6 +29,7 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		this._canvas = null;
 		this._frame  = null;
 		this._delegate = null;
+		this._pane = options.pane || 'overlayPane';
 		L.setOptions(this, options);
 	},
 
@@ -81,7 +82,7 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		L.DomUtil.addClass(this._canvas, 'leaflet-zoom-' + (animated ? 'animated' : 'hide'));
 
 
-		map._panes.overlayPane.appendChild(this._canvas);
+		map.getPane(this._pane).appendChild(this._canvas);
 		map.on(this.getEvents(),this);
 
 		var del = this._delegate || this;
@@ -100,7 +101,7 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 		del.onLayerWillUnmount && del.onLayerWillUnmount(); // -- callback
 
 
-		map.getPanes().overlayPane.removeChild(this._canvas);
+		map.getPane(this._pane).removeChild(this._canvas);
 
 		map.off(this.getEvents(),this);
 
@@ -168,6 +169,6 @@ L.CanvasLayer = (L.Layer ? L.Layer : L.Class).extend({
 	}
 });
 
-L.canvasLayer = function () {
-	return new L.CanvasLayer();
+L.canvasLayer = function (options) {
+	return new L.CanvasLayer(options);
 };
